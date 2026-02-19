@@ -37,6 +37,21 @@
         return WEEK[dt.getDay()];
     }
 
+    function predictYear(m, d) {
+        var today = new Date();
+        var currentYear = today.getFullYear();
+        var currentMonth = today.getMonth() + 1; // 1-12
+        var currentDay = today.getDate();
+
+        // Compare (m, d) with (currentMonth, currentDay)
+        // If (m, d) is strictly before today, assume next year.
+        // E.g. Today is 2/19. Input 2/18 -> Next year. Input 2/19 -> This year.
+        if (m < currentMonth || (m === currentMonth && d < currentDay)) {
+            return currentYear + 1;
+        }
+        return currentYear;
+    }
+
     // --- Step 1: Normalize time range part ---
     // Look for "Date + Time-Time" and format the time part first
     // 2026-02-18 09:00-16:00 -> 2026-02-18　09:00〜16:00
@@ -60,6 +75,27 @@
 
         // Date format: YYYY年M月D日（W）
         return yy + "年" + mm + "月" + dd + "日（" + wd + "）";
+    });
+
+    // --- Step 3: Format yearless date (M/D) ---
+    // 2/20 -> 2月20日（金）
+    // Logic: Infer year based on today. If past, use next year.
+    // Regex: Match "M-D" or "M/D" that are NOT part of a YYYY-MM-DD (checked by \b boundary or previous steps)
+    // To be safe, we match boundaries where a year isn't preceding.
+    // However, since Step 2 already replaced YYYY-MM-DD with "YYYY年...", 
+    // any remaining "M-D" or "M/D" patterns are likely yearless inputs.
+    var shortDateRegex = /\b(\d{1,2})[-\/](\d{1,2})(?:\s*[（(][月火水木金土日][）)])?/g;
+
+    out = out.replace(shortDateRegex, function (match, m, d) {
+        var mm = parseInt(m, 10);
+        var dd = parseInt(d, 10);
+        var yy = predictYear(mm, dd);
+
+        var wd = jaWeekday(yy, mm, dd);
+        if (!wd) return match;
+
+        // Date format: M月D日（W） (No year)
+        return mm + "月" + dd + "日（" + wd + "）";
     });
 
     // Textwell: replaceWhole は「選択があれば選択を、なければ全文を」置換 :contentReference[oaicite:1]{index=1}
