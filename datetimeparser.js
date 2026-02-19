@@ -37,26 +37,20 @@
         return WEEK[dt.getDay()];
     }
 
-    // --- Priority 1: datetime range ---
-    // 2026-02-18 09:00-16:00 / 2026/2/18(水) 9:00-16:00 etc.
-    var rangeRegex = /(\d{4})[-\/](\d{1,2})[-\/](\d{1,2})(?:\s*[（(][月火水木金土日][）)])?\s+(\d{1,2}:\d{2})-(\d{1,2}:\d{2})/g;
-
-    var out = src.replace(rangeRegex, function (match, y, m, d, t1, t2) {
-        var yy = parseInt(y, 10);
-        var mm = parseInt(m, 10);
-        var dd = parseInt(d, 10);
-        var wd = jaWeekday(yy, mm, dd);
-        if (!wd) return match;
-        // 全角スペース（　）＋ 〜
-        return yy + "年" + mm + "月" + dd + "日（" + wd + "）　" + t1 + "〜" + t2;
+    // --- Step 1: Normalize time range part ---
+    // Look for "Date + Time-Time" and format the time part first
+    // 2026-02-18 09:00-16:00 -> 2026-02-18　09:00〜16:00
+    // (Existing weekdays like (Mon) or （月） are kept for now, will be handled in Step 2)
+    var rangeProp = /(\d{4}[-\/]\d{1,2}[-\/]\d{1,2}(?:\s*[（(][月火水木金土日][）)])?)\s+(\d{1,2}:\d{2})-(\d{1,2}:\d{2})/g;
+    var out = src.replace(rangeProp, function (match, datePart, t1, t2) {
+        // Just normalize the separator and spacing for the time part
+        return datePart + "　" + t1 + "〜" + t2;
     });
 
-    // --- Priority 2: date only ---
-    // 2026-02-18, 2026/02/18, 2026/2/18
-    // 既存の (月火水木金土日) があっても更新（重複させない）
-    // 末尾に曜日っぽいものがあればそれもマッチに含めて、生成した文字列で置き換える
+    // --- Step 2: Format date part (and add/update weekday) ---
+    // 2026-02-18 ... -> 2026年2月18日（水） ...
+    // This handles both "Date only" and "Date + Normalized Time" cases
     var dateRegex = /(\d{4})[-\/](\d{1,2})[-\/](\d{1,2})(?:\s*[（(][月火水木金土日][）)])?/g;
-
     out = out.replace(dateRegex, function (match, y, m, d) {
         var yy = parseInt(y, 10);
         var mm = parseInt(m, 10);
@@ -64,7 +58,7 @@
         var wd = jaWeekday(yy, mm, dd);
         if (!wd) return match;
 
-        // 優先度1と同じ形式: YYYY年M月D日（W）
+        // Date format: YYYY年M月D日（W）
         return yy + "年" + mm + "月" + dd + "日（" + wd + "）";
     });
 
