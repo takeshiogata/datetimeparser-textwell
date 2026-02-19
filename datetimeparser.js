@@ -1,14 +1,14 @@
 /*
  * Textwell Action: datetime parser (range + date)
- * - If there is a selection: replace selection
- * - If there is no selection: replace whole text
+ * - 選択範囲がある場合: 選択範囲を置換
+ * - 選択範囲がない場合: 全文を置換
  *
- * Priority 1:
+ * 優先度 1:
  *   2026-02-18 09:00-16:00
  *   -> 2026年2月18日(水)　09:00〜16:00
  *
- * Priority 2:
- *   2026-02-18 / 2026/2/18 / 2026/02/18 (optional existing weekday)
+ * 優先度 2:
+ *   2026-02-18 / 2026/2/18 / 2026/02/18 (曜日が既にあっても可)
  *   -> 2026-02-18 (水)
  */
 
