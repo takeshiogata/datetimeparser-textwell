@@ -63,10 +63,8 @@
         var wd = jaWeekday(yy, mm, dd);
         if (!wd) return match;
 
-        // YYYY-MM-DD はゼロ埋め固定（Templater版の仕様に合わせる）
-        var mm2 = String(mm).padStart(2, "0");
-        var dd2 = String(dd).padStart(2, "0");
-        return yy + "-" + mm2 + "-" + dd2 + " (" + wd + ")";
+        // 優先度1と同じ形式: YYYY年M月D日(W)
+        return yy + "年" + mm + "月" + dd + "日(" + wd + ")";
     });
 
     // Textwell: replaceWhole は「選択があれば選択を、なければ全文を」置換 :contentReference[oaicite:1]{index=1}
