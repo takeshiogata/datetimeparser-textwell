@@ -5,11 +5,11 @@
  *
  * 優先度 1:
  *   2026-02-18 09:00-16:00
- *   -> 2026年2月18日(水)　09:00〜16:00
+ *   -> 2026年2月18日（水）　09:00〜16:00
  *
  * 優先度 2:
  *   2026-02-18 / 2026/2/18 / 2026/02/18 (曜日が既にあっても可)
- *   -> 2026-02-18 (水)
+ *   -> 2026年2月18日（水）
  */
 
 (function () {
@@ -48,13 +48,13 @@
         var wd = jaWeekday(yy, mm, dd);
         if (!wd) return match;
         // 全角スペース（　）＋ 〜
-        return yy + "年" + mm + "月" + dd + "日(" + wd + ")　" + t1 + "〜" + t2;
+        return yy + "年" + mm + "月" + dd + "日（" + wd + "）　" + t1 + "〜" + t2;
     });
 
     // --- Priority 2: date only ---
     // 2026-02-18, 2026/02/18, 2026/2/18
     // 既存の (月火水木金土日) があっても更新（重複させない）
-    var dateRegex = /(\d{4})[-\/](\d{1,2})[-\/](\d{1,2})(?:\s*\([月火水木金土日]\))?/g;
+    var dateRegex = /(\d{4})[-\/](\d{1,2})[-\/](\d{1,2})(?:\s*[（(][月火水木金土日][）)])?/g;
 
     out = out.replace(dateRegex, function (match, y, m, d) {
         var yy = parseInt(y, 10);
@@ -63,8 +63,8 @@
         var wd = jaWeekday(yy, mm, dd);
         if (!wd) return match;
 
-        // 優先度1と同じ形式: YYYY年M月D日(W)
-        return yy + "年" + mm + "月" + dd + "日(" + wd + ")";
+        // 優先度1と同じ形式: YYYY年M月D日（W）
+        return yy + "年" + mm + "月" + dd + "日（" + wd + "）";
     });
 
     // Textwell: replaceWhole は「選択があれば選択を、なければ全文を」置換 :contentReference[oaicite:1]{index=1}
