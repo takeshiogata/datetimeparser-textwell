@@ -56,7 +56,7 @@
     // Look for "Date + Time-Time" and format the time part first
     // 2026-02-18 09:00-16:00 -> 2026-02-18　09:00〜16:00
     // (Existing weekdays like (Mon) or （月） are kept for now, will be handled in Step 2)
-    var rangeProp = /(\d{4}[-\/]\d{1,2}[-\/]\d{1,2}(?:\s*[（(][月火水木金土日][）)])?)\s+(\d{1,2}:\d{2})-(\d{1,2}:\d{2})/g;
+    var rangeProp = /((?:\d{4}[-\/])?\d{1,2}[-\/]\d{1,2}(?:\s*[（(][月火水木金土日][）)])?)\s+(\d{1,2}:\d{2})-(\d{1,2}:\d{2})/g;
     var out = src.replace(rangeProp, function (match, datePart, t1, t2) {
         // Just normalize the separator and spacing for the time part
         return datePart + "　" + t1 + "〜" + t2;
